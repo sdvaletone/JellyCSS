@@ -63,6 +63,21 @@
     --gf-glass-stroke: rgba(255, 255, 255, 0.14);
     --gf-glass-highlight: rgba(255, 255, 255, 0.2);
     --gf-glass-shadow: rgba(0, 0, 0, 0.28);
+    --gf-accent: var(--uiAccentColor);
+    --gf-accent-strong: color-mix(in srgb, var(--gf-accent) 80%, white 20%);
+    --gf-accent-soft: color-mix(in srgb, var(--gf-accent) 22%, transparent);
+    --gf-glass-border: 1px solid var(--gf-glass-stroke);
+    --gf-glass-bg: rgba(12, 16, 26, 0.58);
+    --gf-glass-elevated: rgba(12, 16, 26, 0.72);
+    --gf-glass-focus: 0 0 0 1px var(--gf-glass-highlight);
+    --gf-ctrl-radius: var(--smallRadius);
+    --gf-ctrl-radius-lg: var(--largeRadius);
+    --gf-bg-animated: none;
+    --gf-bg-animated-size: 220% 220%;
+    --gf-bg-animated-position: 50% 50%;
+    --gf-bg-animated-motion: none;
+    --gf-anim-rainbow: linear-gradient(120deg, rgba(255, 119, 216, 0.14), rgba(117, 111, 226, 0.14), rgba(93, 216, 255, 0.12), rgba(117, 255, 214, 0.12));
+    --gf-anim-rainbow-motion: gf-bg-rainbow 42s ease-in-out infinite alternate;
 
     /* textures */
     --backgroundGradient: var(--gf-bg-gradient);
@@ -196,6 +211,8 @@ html {
     --gf-bg-blur: blur(10px);
     --panelBlur: blur(8px);
     --glassPanelBlur: blur(5px);
+    --gf-bg-animated: none;
+    --gf-bg-animated-motion: none;
 }
 .layout-tv .backgroundContainer.withBackdrop {
     opacity: 0.9;
@@ -316,8 +333,9 @@ html {
 .emby-button.show-focus:focus,
 .paper-icon-button-light.show-focus:focus,
 .emby-tabs .emby-button.show-focus:focus {
-    background-color: var(--highlightOutlineColor) !important;
-    color: #fff !important;
+    background-color: var(--gf-accent-soft) !important;
+    color: var(--textColor) !important;
+    box-shadow: var(--gf-glass-focus);
 }
 
 .emby-tabs .emby-button.show-focus:focus {
@@ -1214,8 +1232,9 @@ html {
 }
 /* color the media info rating when hovering */
 .mediaInfoOfficialRating:hover {
-    background: orange;
-    color: black;
+    background: var(--gf-accent-soft);
+    color: var(--textColor);
+    border-color: var(--gf-accent);
 }
 
 .starIcon {
@@ -1582,14 +1601,16 @@ html,
 .backgroundContainer:not(.backgroundContainer-transparent),
 .backdropContainer {
     background-color: var(--gf-bg-surface, var(--darkerGradientPoint));
-    background-image: linear-gradient(180deg, rgba(12, 16, 26, 0.82), rgba(8, 11, 17, var(--gf-bg-opacity))),
+    background-image: var(--gf-bg-animated),
+        linear-gradient(180deg, rgba(12, 16, 26, 0.82), rgba(8, 11, 17, var(--gf-bg-opacity))),
         var(--gf-bg-gradient),
         var(--gf-bg-noise),
         var(--gf-bg-image);
     background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-    background-blend-mode: soft-light, soft-light, soft-light, normal;
+    background-size: var(--gf-bg-animated-size), cover, cover, cover, cover;
+    background-position: var(--gf-bg-animated-position), center, center, center, center;
+    background-blend-mode: screen, soft-light, soft-light, soft-light, normal;
+    animation: var(--gf-bg-animated-motion, none);
 }
 
 .backdropImage {
@@ -1646,6 +1667,18 @@ html,
 
 .layout-mobile .withSectionTabs .backdropImage:after {
     display: none;
+}
+
+@keyframes gf-bg-rainbow {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 @keyframes animScaleUp {
@@ -1889,12 +1922,14 @@ progress + span {
 }
 
 .button-flat:hover {
-    color: unset;
+    background-color: var(--gf-accent-soft);
+    color: var(--textColor);
+    box-shadow: var(--shadow);
 }
 
 .button-flat:active {
-    color: unset;
-    background-color: rgba(255, 255, 255, 0.2);
+    color: var(--textColor);
+    background-color: color-mix(in srgb, var(--gf-accent) 38%, rgba(0, 0, 0, 0.35));
 }
 
 .playstatebutton-icon-played {
@@ -2103,8 +2138,10 @@ progress + span {
 }
 
 .dialog {
-    backdrop-filter: var(--blurDefault);
-    background-color: transparent;
+    backdrop-filter: var(--glassPanelBlur);
+    background-color: var(--gf-glass-elevated);
+    border: var(--gf-glass-border);
+    box-shadow: 0 10px 60px var(--gf-glass-shadow);
     min-width: 11em;
 }
 
@@ -2114,7 +2151,7 @@ progress + span {
 
 .dialog:not(.dialog-fullscreen) {
     border-radius: var(--largeRadius) !important;
-    border: var(--defaultBorder);
+    border: var(--gf-glass-border);
 }
 
 @media (max-width: 80em), (max-height: 45em) {
@@ -2131,7 +2168,10 @@ progress + span {
 }
 
 .dialogBackdropOpened {
-    opacity: 0.66;
+    opacity: 0.7;
+    background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.08), transparent 40%),
+        radial-gradient(circle at 80% 10%, rgba(117, 111, 226, 0.08), transparent 45%),
+        rgba(6, 8, 14, 0.8);
 }
 
 .subtitleEditor-dropZone,
@@ -3236,10 +3276,10 @@ div[data-role="controlgroup"] a.ui-btn-active {
 }
 /* Add transform */
 .emby-tab-button:hover {
-    color: whitesmoke;
-    background: orange;
-    font-weight: 900 !important;
-    transform: scale(1.1);
+    color: var(--textColor);
+    background: var(--gf-accent-soft);
+    font-weight: 800 !important;
+    transform: scale(1.06);
 }
 
     .actionSheetMenuItem.emby-button:has(.listItemIcon.material-icons.check[style*="hidden"]):hover {
@@ -3259,8 +3299,9 @@ div[data-role="controlgroup"] a.ui-btn-active {
     }
 
     .button-flat:hover {
-        background-color: rgba(255, 255, 255, 0.2);
-        color: white;
+        background-color: var(--gf-accent-soft);
+        color: var(--textColor);
+        box-shadow: var(--shadow);
     }
 /* Update play button color and behaviour when hovering */
     .btnPlay.detailButton:hover {
@@ -3620,14 +3661,16 @@ ul.MuiList-root.MuiMenu-list.MuiList-dense > div:first-child {
     min-height: 100vh;
     padding: 1em;
     overflow-y: auto;
-    background-image: linear-gradient(180deg, rgba(13, 16, 33, 0.7), rgba(9, 13, 48, 0.82)),
+    background-image: var(--gf-bg-animated),
+        linear-gradient(180deg, rgba(13, 16, 33, 0.7), rgba(9, 13, 48, 0.82)),
         var(--gf-bg-gradient),
+        var(--gf-bg-noise),
         var(--gf-bg-image),
         var(--loginPageBgUrl);
-    background-size: cover;
-    background-position: center;
+    background-size: var(--gf-bg-animated-size), cover, cover, cover, cover;
+    background-position: var(--gf-bg-animated-position), center, center, center, center;
     background-repeat: no-repeat;
-    background-blend-mode: soft-light, normal;
+    background-blend-mode: screen, soft-light, soft-light, normal;
     box-sizing: border-box;
 }
 
@@ -4031,10 +4074,12 @@ ul.MuiList-root.MuiMenu-list.MuiList-dense > div:first-child {
 
 .headerTabs.sectionTabs .emby-tab-button-active {
     margin: 0.25em 0.5em;
-    color: #ffffff;
-    background-color: rgb(147 147 147 / 14%);
-    backdrop-filter: blur(10px);
-    font-weight: bolder;
+    color: var(--textColor);
+    background-color: var(--gf-accent-soft);
+    border: var(--gf-glass-border);
+    backdrop-filter: var(--glassPanelBlur);
+    box-shadow: var(--shadow);
+    font-weight: 800;
 }
 
 .layout-mobile .headerTabs.sectionTabs .emby-tab-button:first-child {
