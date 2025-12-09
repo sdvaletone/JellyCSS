@@ -9,11 +9,11 @@
     --FooterTextGlassFin: "GlassFin V01.08";
     /* Base theme colors */
     color-scheme: dark;
-    --darkerGradientPoint: #090d30;
-    --darkerGradientPointAlpha: rgba(17, 24, 39, 0.85);
-    --lighterGradientPoint: #090d30;
-    --lighterGradientPointAlpha: rgba(29, 38, 53, 0.85);
-    --gradientPointAlpha: rgba(29, 38, 53, 0.3);
+    --darkerGradientPoint: #0a0d14;
+    --darkerGradientPointAlpha: rgba(10, 13, 20, 0.9);
+    --lighterGradientPoint: #0f1420;
+    --lighterGradientPointAlpha: rgba(15, 20, 32, 0.92);
+    --gradientPointAlpha: rgba(21, 28, 43, 0.38);
     --headerColor: rgba(30, 40, 54, 0.8);
     --drawerColor: rgba(30, 40, 54, 0.9);
 
@@ -49,8 +49,23 @@
     --textColor: rgb(209, 213, 219);
     --dimTextColor: rgb(212, 212, 212);
 
+    /* liquid glass background controls */
+    --gf-bg-image: none;
+    --gf-bg-gradient: radial-gradient(120% 120% at 18% 18%, rgba(255, 255, 255, 0.09), transparent 45%),
+        radial-gradient(120% 120% at 84% 8%, rgba(123, 162, 255, 0.14), transparent 48%),
+        radial-gradient(100% 80% at 32% 72%, rgba(64, 120, 255, 0.08), transparent 52%),
+        linear-gradient(175deg, #0b0f17 0%, #0a0d15 42%, #080b11 100%);
+    --gf-bg-tint: rgba(255, 255, 255, 0.06);
+    --gf-bg-blur: blur(16px);
+    --gf-bg-opacity: 0.95;
+    --gf-bg-noise: none;
+    --gf-bg-surface: #0a0d14;
+    --gf-glass-stroke: rgba(255, 255, 255, 0.14);
+    --gf-glass-highlight: rgba(255, 255, 255, 0.2);
+    --gf-glass-shadow: rgba(0, 0, 0, 0.28);
+
     /* textures */
-    --backgroundGradient: linear-gradient(0deg, var(--darkerGradientPoint), var(--lighterGradientPoint) 45%);
+    --backgroundGradient: var(--gf-bg-gradient);
     --cardBackgroundGradient: linear-gradient(0deg, var(--darkerGradientPoint), 0%, var(--lighterGradientPoint));
     --headerColorGradient: linear-gradient(180deg, rgba(30, 40, 54, 0.95) 30%, 55%, transparent 90%);
     --headerColorGradientAlt: linear-gradient(180deg, rgba(30, 40, 54, 1), 70%, transparent);
@@ -97,8 +112,10 @@
     --blurDefault: blur(5px);
     --blurLarge: blur(10px);
     --blurLargest: blur(20px);
+    --glassPanelBlur: var(--blurLarge);
+    --panelBlur: var(--blurLargest);
 
-    --shadow: 0.1em 0.1em 0.15em hsla(0, 0%, 0%, 0.3);
+    --shadow: 0.1em 0.1em 0.15em hsla(0, 0%, 0, 0.3);
 
     /* use "" to enable a fancy blur behind the app header / top bar [default]; 
        use none (without quotes) to disable it */
@@ -172,6 +189,47 @@ html {
     --blurLargest: blur(12px);
     --headerBlurMask: linear-gradient(180deg, white 60%, 90%, transparent);
     --secondaryItemPageNegativeSpace: 45vh;
+}
+
+/* LG webOS 25 performance guardrails */
+.layout-tv {
+    --gf-bg-blur: blur(10px);
+    --panelBlur: blur(8px);
+    --glassPanelBlur: blur(5px);
+}
+.layout-tv .backgroundContainer.withBackdrop {
+    opacity: 0.9;
+}
+.layout-tv .backdropImageFadeIn {
+    animation-duration: 0.24s;
+    animation-timing-function: cubic-bezier(0.32, 0.56, 0.14, 1);
+    transform: none;
+}
+.layout-tv .backdropImage:before {
+    filter: blur(9px) saturate(125%);
+    transform: scale(1.04);
+}
+.layout-tv .cardImageContainer {
+    transition: transform 0.18s ease, opacity 0.18s ease;
+}
+.layout-tv .card-hoverable:hover .cardScalable,
+.layout-tv .card-hoverable:hover .itemSelectionPanel {
+    transform: scale(1.008);
+}
+@media (prefers-reduced-motion: reduce) {
+    .backdropImageFadeIn {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
+    .cardImageContainer,
+    .card-hoverable .cardOverlayContainer {
+        transition: none !important;
+    }
+    .layout-tv * {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0ms !important;
+    }
 }
 
 /* Material Icons Round */
@@ -1523,8 +1581,15 @@ html,
 .backgroundContainer:not(.withBackdrop),
 .backgroundContainer:not(.backgroundContainer-transparent),
 .backdropContainer {
-    background-color: var(--darkerGradientPoint);
-    background: var(--backgroundGradient);
+    background-color: var(--gf-bg-surface, var(--darkerGradientPoint));
+    background-image: linear-gradient(180deg, rgba(12, 16, 26, 0.82), rgba(8, 11, 17, var(--gf-bg-opacity))),
+        var(--gf-bg-gradient),
+        var(--gf-bg-noise),
+        var(--gf-bg-image);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-blend-mode: soft-light, soft-light, soft-light, normal;
 }
 
 .backdropImage {
@@ -1555,16 +1620,16 @@ html,
 
 .backdropImage:before {
     transform: scale(1.1);
-    filter: var(--blurLargest);
+    filter: var(--panelBlur);
 }
 
 .backgroundContainer.withBackdrop {
     opacity: 0.9;
-    background: linear-gradient(0deg, var(--darkerGradientPoint), 45%, rgba(17, 24, 39, 0.25));
+    background: linear-gradient(0deg, var(--gf-bg-surface, var(--darkerGradientPoint)), 45%, rgba(12, 16, 26, 0.25));
 }
 
 .layout-tv .backgroundContainer.withBackdrop {
-    background: linear-gradient(0deg, var(--darkerGradientPoint), 45%, rgba(17, 24, 39, 0.95));
+    background: linear-gradient(0deg, var(--gf-bg-surface, var(--darkerGradientPoint)), 45%, rgba(12, 16, 26, 0.8));
 }
 
 .layout-mobile .withSectionTabs .backgroundContainer.withBackdrop {
@@ -1602,7 +1667,7 @@ html,
 
 .appfooter {
     background-color: var(--headerColor) !important;
-    backdrop-filter: var(--blurLargest) !important;
+    backdrop-filter: var(--panelBlur) !important;
 }
 
 .lyricPage {
@@ -1649,7 +1714,7 @@ html,
 }
 
 .itemProgressBar:not(.backgroundProgress):not(.playbackProgress):not(.transcodingProgress) {
-    backdrop-filter: var(--blurLarge);
+    backdrop-filter: var(--glassPanelBlur);
     background-color: var(--osdSeekBarBufferedColorAlpha) !important;
     height: 0.35em;
     overflow: hidden;
@@ -3555,10 +3620,14 @@ ul.MuiList-root.MuiMenu-list.MuiList-dense > div:first-child {
     min-height: 100vh;
     padding: 1em;
     overflow-y: auto;
-    background: linear-gradient(to bottom, rgb(17 24 39 / 30%), #090d304d), var(--loginPageBgUrl);
+    background-image: linear-gradient(180deg, rgba(13, 16, 33, 0.7), rgba(9, 13, 48, 0.82)),
+        var(--gf-bg-gradient),
+        var(--gf-bg-image),
+        var(--loginPageBgUrl);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    background-blend-mode: soft-light, normal;
     box-sizing: border-box;
 }
 
